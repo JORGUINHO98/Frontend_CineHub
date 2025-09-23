@@ -36,7 +36,7 @@ export default function LoginScreen() {
       if (isLogin) {
         await signIn(email, password);
       } else {
-        await signUp({ email, nombre , password,});
+        await signUp({ email, nombre, password });
       }
     } catch (err: any) {
       console.error(err);
@@ -49,18 +49,10 @@ export default function LoginScreen() {
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      {/* Fondo animado futurista */}
-      <View style={styles.gradientBackground} />
-
       <View style={styles.card}>
         <Text style={styles.logo}>🎬 CineHub</Text>
         <Text style={styles.title}>
           {isLogin ? "Bienvenido de nuevo" : "Crea tu cuenta"}
-        </Text>
-        <Text style={styles.subtitle}>
-          {isLogin
-            ? "Accede y disfruta de tus películas favoritas"
-            : "Regístrate y comienza tu experiencia"}
         </Text>
 
         {!isLogin && (
@@ -99,7 +91,7 @@ export default function LoginScreen() {
           disabled={loading}
         >
           {loading ? (
-            <ActivityIndicator color="#fff" />
+            <ActivityIndicator color="#000" />
           ) : (
             <Text style={styles.buttonText}>
               {isLogin ? "🚀 Entrar" : "✨ Registrarse"}
