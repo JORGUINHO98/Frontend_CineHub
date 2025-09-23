@@ -1,15 +1,14 @@
-// context/AuthContext.tsx
 import React, { createContext, useEffect, useState, ReactNode } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setAuthToken, authService } from "../services/api";
-import { ExtendedUser } from "types";   // 👈 usamos ExtendedUser
+import { ExtendedUser } from "types";
 
 type AuthContextType = {
   user: ExtendedUser | null;
   loading: boolean;
   isAuthenticated: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (userData: any) => Promise<void>;
+  signUp: (userData: { email: string; password: string; nombre: string }) => Promise<void>;
   signOut: () => Promise<void>;
   updateProfile: (userData: any) => Promise<void>;
   refreshUser: () => Promise<void>;
@@ -30,7 +29,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<ExtendedUser | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // === Cerrar sesión ===
   const signOut = async () => {
     try {
       await AsyncStorage.multiRemove([
@@ -45,7 +43,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // === Refrescar perfil desde backend ===
   const refreshUser = async () => {
     try {
       const profile = await authService.getProfile();
@@ -59,7 +56,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // === Inicialización ===
   useEffect(() => {
     (async () => {
       try {
@@ -83,7 +79,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     })();
   }, []);
 
-  // === Iniciar sesión ===
   const signIn = async (email: string, password: string) => {
     try {
       await AsyncStorage.multiRemove([
@@ -99,44 +94,43 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       await AsyncStorage.setItem("@cinehub_refresh", refresh);
       setAuthToken(access);
 
-      await refreshUser();
-    } catch (err) {
-      console.error("Login error:", err);
-      await signOut();
-      throw err;
-    }
-  };
-
-  // === Registrarse ===
-  const signUp = async (userData: any) => {
-    try {
-      console.log("Attempting registration with data:", userData);
-      await authService.register(userData);
-      await signIn(userData.email, userData.password);
+      const profile = await authService.getProfile();
+      setUser(profile);
+      await AsyncStorage.setItem("@cinehub_user", JSON.stringify(profile));
     } catch (error: any) {
-      console.error("Registration error details:", error);
+      console.error("Login error:", error);
       await signOut();
 
-      if (error.response?.data?.error) {
-        throw new Error(error.response.data.error);
-      } else if (error.response?.data?.email) {
-        throw new Error(`Email: ${error.response.data.email[0]}`);
-      } else if (error.response?.data?.password) {
-        throw new Error(`Contraseña: ${error.response.data.password[0]}`);
-      } else if (error.response?.status === 400) {
-        throw new Error("Datos inválidos. Verifica los campos.");
-      } else if (error.response?.status === 500) {
-        throw new Error("Error del servidor. Inténtalo más tarde.");
-      } else {
-        throw new Error("Error de conexión. Verifica tu internet.");
+      if (error.response?.status === 401) {
+        throw new Error("Credenciales inválidas. Verifica tu email y contraseña.");
       }
+      if (error.response?.status === 400) {
+        throw new Error("Datos inválidos en el login.");
+      }
+      throw new Error("Error de conexión. Intenta más tarde.");
     }
   };
 
-  // === Actualizar perfil ===
+  const signUp = async (userData: { email: string; password: string; nombre: string }) => {
+  try {
+    console.log("🔵 signUp userData:", userData); // 👈 log
+    await authService.register(userData);
+    await signIn(userData.email, userData.password); // login automático
+  } catch (error: any) {
+    console.error("❌ SignUp error:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
   const updateProfile = async (userData: any) => {
-    await authService.updateProfile(userData);
-    await refreshUser();
+    try {
+      const updated = await authService.updateProfile(userData);
+      setUser(updated);
+      await AsyncStorage.setItem("@cinehub_user", JSON.stringify(updated));
+    } catch (error: any) {
+      console.error("Update profile error:", error);
+      throw new Error("No se pudo actualizar el perfil.");
+    }
   };
 
   return (

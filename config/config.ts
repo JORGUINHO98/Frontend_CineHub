@@ -1,8 +1,16 @@
 // config/config.ts
-const LOCAL_IP = "10.46.136.20"; // ⚠️ tu IP real
 const PORT = "8050";
 
-export const API_URL = `http://${LOCAL_IP}:${PORT}/api`; // 👈 siempre con /api
+// 👉 Detectar si estamos corriendo en navegador (Expo Web) o en móvil (Expo Go / APK)
+const isWeb = typeof window !== "undefined";
+
+// ⚠️ IMPORTANTE: cambia esta IP por la de tu PC en la red local cuando uses Expo Go en el celular
+const LOCAL_IP = "192.168.0.10"
+
+// 👉 Si estamos en web usar localhost, si es móvil usar IP local
+const HOST = isWeb ? "localhost" : LOCAL_IP;
+
+export const API_URL = `http://${HOST}:${PORT}/api`; // 👈 siempre con /api
 
 export const TMDB_API_KEY =
   process.env.EXPO_PUBLIC_TMDB_API_KEY ||
@@ -11,7 +19,7 @@ export const TMDB_API_KEY =
 export const APP_CONFIG = {
   name: "CineHub",
   version: "1.0.0",
-  apiTimeout: 15000,
+  apiTimeout: 30000, // ⏱️ subido a 30s para evitar falsos timeouts
   maxRetries: 3,
   cacheTimeout: 300000,
 };

@@ -6,7 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import { Movie } from "types";   
+import { Movie } from "types";
 
 type Props = {
   movie: Movie;
@@ -37,9 +37,14 @@ export default function MovieCard({
       {layout === "grid" ? (
         <>
           <Image source={posterSource} style={styles.gridImage} />
-          <Text numberOfLines={2} style={styles.gridTitle}>
+          <Text numberOfLines={2} ellipsizeMode="tail" style={styles.gridTitle}>
             {movie.title}
           </Text>
+          {movie.release_date && (
+            <Text style={styles.gridSubtitle}>
+              {movie.release_date.split("-")[0]}
+            </Text>
+          )}
         </>
       ) : (
         <>
@@ -61,19 +66,27 @@ export default function MovieCard({
 const styles = StyleSheet.create({
   gridCard: {
     flex: 1,
-    margin: 5,
+    margin: 6,
     alignItems: "center",
+    width: 130,
   },
   gridImage: {
     width: 120,
     height: 180,
-    borderRadius: 8,
+    borderRadius: 10,
+    marginBottom: 6,
   },
   gridTitle: {
-    marginTop: 5,
     fontSize: 14,
-    fontWeight: "bold",
+    fontWeight: "600",
     color: "#fff",
+    textAlign: "center",
+    lineHeight: 18,     // 👈 separa las letras
+    marginBottom: 2,    // 👈 deja aire con el año
+  },
+  gridSubtitle: {
+    fontSize: 12,
+    color: "#aaa",
     textAlign: "center",
   },
   listCard: {
@@ -96,6 +109,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     color: "#fff",
+    lineHeight: 20,
   },
   listSubtitle: {
     fontSize: 14,

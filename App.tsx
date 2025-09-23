@@ -1,10 +1,10 @@
+// App.tsx
 import React, { useContext } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { View, Text, ActivityIndicator } from "react-native";
 import { AuthProvider, AuthContext } from "./context/AuthContext";
-
 import LoginScreen from "./screens/Login";
 import HomeScreen from "./screens/Home";
 import SearchScreen from "./screens/Search";
@@ -21,7 +21,7 @@ function LoadingScreen() {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: COLORS.background,
+        backgroundColor: COLORS?.background ?? "#000",
       }}
     >
       <Text style={{ fontSize: 72, marginBottom: 16 }}>🎬</Text>
@@ -29,13 +29,13 @@ function LoadingScreen() {
         style={{
           fontSize: 28,
           fontWeight: "bold",
-          color: COLORS.primary,
+          color: COLORS?.primary ?? "#0f0",
           marginBottom: 20,
         }}
       >
         CineHub
       </Text>
-      <ActivityIndicator color={COLORS.primary} size="large" />
+      <ActivityIndicator color={COLORS?.primary ?? "#0f0"} size="large" />
     </View>
   );
 }
@@ -65,9 +65,7 @@ function MainTabs() {
         name="Home"
         component={HomeScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <Text style={{ fontSize: size, color }}>🏠</Text>
-          ),
+          tabBarIcon: ({ color, size }) => <Text style={{ fontSize: size, color }}>🏠</Text>,
           tabBarLabel: "Inicio",
         }}
       />
@@ -75,9 +73,7 @@ function MainTabs() {
         name="Search"
         component={SearchScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <Text style={{ fontSize: size, color }}>🔍</Text>
-          ),
+          tabBarIcon: ({ color, size }) => <Text style={{ fontSize: size, color }}>🔍</Text>,
           tabBarLabel: "Buscar",
         }}
       />
@@ -85,9 +81,7 @@ function MainTabs() {
         name="Profile"
         component={ProfileScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <Text style={{ fontSize: size, color }}>👤</Text>
-          ),
+          tabBarIcon: ({ color, size }) => <Text style={{ fontSize: size, color }}>👤</Text>,
           tabBarLabel: "Perfil",
         }}
       />
@@ -97,6 +91,11 @@ function MainTabs() {
 
 function AppNav() {
   const { user, loading } = useContext(AuthContext);
+
+  // DEBUG: imprime el estado de auth para ver qué ocurre en tiempo real
+  // (si usas Expo, verás esto en la consola Metro)
+  // eslint-disable-next-line no-console
+  console.log("[AppNav] auth state:", { loading, user });
 
   if (loading) {
     return <LoadingScreen />;

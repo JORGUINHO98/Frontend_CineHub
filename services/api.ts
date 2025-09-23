@@ -101,17 +101,32 @@ export const movieService = {
     return response.data;
   },
 
-  async search(query: string, page: number = 1) {
-    const cacheKey = `search_${query}_${page}`;
+  async getEstrenos() {
+    const cacheKey = "estrenos_movies";
     const cached = await getCachedData(cacheKey);
     if (cached) return cached;
 
-    const response = await api.get(
-      `/tmdb/buscar/?q=${encodeURIComponent(query)}&page=${page}`
-    );
+    const response = await api.get("/tmdb/estrenos/");
     setCachedData(cacheKey, response.data);
     return response.data;
   },
+
+  async search(query: string, page: number = 1) {
+  const cacheKey = `search_${query}_${page}`;
+  const cached = await getCachedData(cacheKey);
+  if (cached) return cached;
+
+  const response = await api.get(
+    `/tmdb/buscar/?q=${encodeURIComponent(query)}&page=${page}`
+  );
+
+  setCachedData(cacheKey, response.data); // 👈 guardamos todo el objeto
+  return response.data; // 👈 devolvemos todo el objeto
+},
+async getMovieDetails(movieId: number) {
+  const response = await api.get(`/tmdb/detalle/${movieId}/`);
+  return response.data;
+},
 
   async getFavorites() {
     const response = await api.get("/favoritos/");
@@ -140,15 +155,17 @@ export const movieService = {
 };
 
 export const authService = {
+  // 👇 Aquí cambiamos a /auth/login-jwt/ que es el que devuelve tokens
   async login(email: string, password: string) {
-    const response = await api.post("/auth/login/", { email, password });
+    const response = await api.post("/auth/login-jwt/", { email, password });
     return response.data; // { access, refresh }
   },
 
-  async register(userData: any) {
-    const response = await api.post("/auth/register/", userData);
-    return response.data;
-  },
+  async register(userData: { email: string; nombre: string; password: string }) {
+  console.log("👉 Enviando a backend:", userData); // 👈 log para confirmar
+  const response = await api.post("/auth/register/", userData);
+  return response.data;
+},
 
   async getProfile() {
     const response = await api.get("/auth/profile/");

@@ -1,216 +1,185 @@
-// screens/LoginScreen.tsx
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   ActivityIndicator,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient"; // 👈 Instalar: expo install expo-linear-gradient
-import { AuthContext } from "../context/AuthContext";
-import { COLORS } from "../config/config";
+import { useAuth } from "../hooks/useAuth";
 
 export default function LoginScreen() {
-  const { signIn, signUp } = useContext(AuthContext);
+  const { signIn, signUp, loading } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
+
   const [email, setEmail] = useState("");
+  const [nombre, setNombre] = useState("");
   const [password, setPassword] = useState("");
-  const [nombre, setNombre] = useState(""); // Solo en registro
-  const [telefono, setTelefono] = useState(""); // Solo en registro
-  const [pais, setPais] = useState(""); // Solo en registro
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const validateForm = () => {
-    if (!email || !password) {
-      setError("⚠️ Email y contraseña son obligatorios");
+    if (!email || !password || (!isLogin && !nombre)) {
+      setError("⚠️ Todos los campos son obligatorios");
       return false;
     }
-    
-    if (!isLogin && !nombre.trim()) {
-      setError("⚠️ El nombre es obligatorio para registrarse");
-      return false;
-    }
-    
-    if (password.length < 6) {
-      setError("⚠️ La contraseña debe tener al menos 6 caracteres");
-      return false;
-    }
-    
     return true;
   };
 
   const handleSubmit = async () => {
     setError("");
-    
-    if (!validateForm()) {
-      return;
-    }
-    
-    setLoading(true);
+    if (!validateForm()) return;
+
     try {
       if (isLogin) {
         await signIn(email, password);
       } else {
-        await signUp({ 
-          email, 
-          password, 
-          nombre,
-          telefono: telefono || "",
-          pais: pais || ""
-        });
+        await signUp({ email, nombre , password,});
       }
     } catch (err: any) {
       console.error(err);
-      setError("⚠️ Verifica tus datos o intenta más tarde.");
-    } finally {
-      setLoading(false);
+      setError(err.message || "⚠️ Verifica tus datos o intenta más tarde.");
     }
   };
 
   return (
-    <LinearGradient
-      colors={["#0f0f0f", "#1a1a1a", "#000"]}
+    <KeyboardAvoidingView
       style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <Text style={styles.logo}>🎬 CineHub</Text>
-      <Text style={styles.title}>
-        {isLogin ? "Bienvenido de nuevo" : "Crea tu cuenta"}
-      </Text>
+      {/* Fondo animado futurista */}
+      <View style={styles.gradientBackground} />
 
-      {!isLogin && (
-        <>
+      <View style={styles.card}>
+        <Text style={styles.logo}>🎬 CineHub</Text>
+        <Text style={styles.title}>
+          {isLogin ? "Bienvenido de nuevo" : "Crea tu cuenta"}
+        </Text>
+        <Text style={styles.subtitle}>
+          {isLogin
+            ? "Accede y disfruta de tus películas favoritas"
+            : "Regístrate y comienza tu experiencia"}
+        </Text>
+
+        {!isLogin && (
           <TextInput
-            placeholder="Nombre completo"
-            placeholderTextColor="#aaa"
             style={styles.input}
+            placeholder="Nombre completo"
+            placeholderTextColor="#ccc"
             value={nombre}
             onChangeText={setNombre}
           />
-          <TextInput
-            placeholder="Teléfono (opcional)"
-            placeholderTextColor="#aaa"
-            style={styles.input}
-            value={telefono}
-            onChangeText={setTelefono}
-            keyboardType="phone-pad"
-          />
-          <TextInput
-            placeholder="País (opcional)"
-            placeholderTextColor="#aaa"
-            style={styles.input}
-            value={pais}
-            onChangeText={setPais}
-          />
-        </>
-      )}
-
-      <TextInput
-        placeholder="Correo electrónico"
-        placeholderTextColor="#aaa"
-        style={styles.input}
-        autoCapitalize="none"
-        keyboardType="email-address"
-        value={email}
-        onChangeText={setEmail}
-      />
-
-      <TextInput
-        placeholder="Contraseña"
-        placeholderTextColor="#aaa"
-        style={styles.input}
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
-
-      {error ? <Text style={styles.error}>{error}</Text> : null}
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={handleSubmit}
-        disabled={loading}
-      >
-        {loading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.buttonText}>
-            {isLogin ? "Iniciar Sesión" : "Registrarse"}
-          </Text>
         )}
-      </TouchableOpacity>
 
-      <TouchableOpacity
-        onPress={() => setIsLogin(!isLogin)}
-        style={{ marginTop: 20 }}
-      >
-        <Text style={styles.switchText}>
-          {isLogin
-            ? "¿No tienes cuenta? Regístrate aquí"
-            : "¿Ya tienes cuenta? Inicia sesión"}
-        </Text>
-      </TouchableOpacity>
-    </LinearGradient>
+        <TextInput
+          style={styles.input}
+          placeholder="Correo electrónico"
+          placeholderTextColor="#ccc"
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+        />
+
+        <TextInput
+          style={styles.input}
+          placeholder="Contraseña"
+          placeholderTextColor="#ccc"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
+
+        {error ? <Text style={styles.error}>{error}</Text> : null}
+
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleSubmit}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.buttonText}>
+              {isLogin ? "🚀 Entrar" : "✨ Registrarse"}
+            </Text>
+          )}
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => setIsLogin(!isLogin)}>
+          <Text style={styles.switchText}>
+            {isLogin
+              ? "¿No tienes cuenta? Regístrate aquí"
+              : "¿Ya tienes cuenta? Inicia sesión"}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    backgroundColor: "#000", // fondo negro puro
     alignItems: "center",
+    justifyContent: "center",
     paddingHorizontal: 20,
   },
+  card: {
+    width: "100%",
+    alignItems: "center",
+  },
   logo: {
-    fontSize: 50,
+    fontSize: 48,
     fontWeight: "bold",
-    marginBottom: 10,
-    color: COLORS.primary,
-    textShadowColor: "rgba(255,255,255,0.3)",
-    textShadowOffset: { width: 2, height: 2 },
-    textShadowRadius: 6,
+    textAlign: "center",
+    marginBottom: 8,
+    color: "#00ff88", // verde neón
+    textShadowColor: "#0f0",
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 15,
   },
   title: {
     fontSize: 20,
-    fontWeight: "600",
-    marginBottom: 30,
+    textAlign: "center",
     color: "#fff",
+    marginBottom: 20,
   },
   input: {
     width: "100%",
-    padding: 15,
-    borderRadius: 12,
-    backgroundColor: "rgba(255,255,255,0.08)",
-    marginBottom: 15,
-    color: "#fff",
+    backgroundColor: "#111",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.1)",
-  },
-  button: {
-    backgroundColor: COLORS.primary,
-    paddingVertical: 15,
-    borderRadius: 12,
-    width: "100%",
-    alignItems: "center",
-    marginTop: 10,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-  },
-  buttonText: {
+    borderColor: "#333",
+    borderRadius: 8,
+    padding: 14,
+    marginBottom: 14,
     color: "#fff",
-    fontWeight: "700",
     fontSize: 16,
   },
+  button: {
+    width: "100%",
+    backgroundColor: "#00ff88", // verde fosforescente
+    padding: 16,
+    borderRadius: 10,
+    alignItems: "center",
+    marginVertical: 12,
+  },
+  buttonText: {
+    color: "#000",
+    fontSize: 18,
+    fontWeight: "700",
+  },
   switchText: {
-    color: "#bbb",
+    textAlign: "center",
+    color: "#aaa",
+    marginTop: 14,
     fontSize: 14,
   },
   error: {
     color: "red",
+    textAlign: "center",
     marginBottom: 10,
   },
 });
