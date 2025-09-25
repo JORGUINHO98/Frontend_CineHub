@@ -1,16 +1,15 @@
-// src/navigation/AppNavigator.tsx
-import { createNativeStackNavigator } from "@react-navigation/native-stack"; // ✅ nuevo import
-import HomeScreen from "../screens/Home";
-import SearchScreen from "../screens/Search";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import TabNavigator from "./TabNavigator";
 import MovieDetailScreen from "../screens/MovieDetail";
-
-const Stack = createNativeStackNavigator(); // ✅ en vez de createStackNavigator
-
+const Stack = createNativeStackNavigator();
+import { RootStackParamList } from "../types";
 export default function AppNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Home" component={HomeScreen} />
-      <Stack.Screen name="Search" component={SearchScreen} />
+      {/* Tabs principales */}
+      <Stack.Screen name="MainTabs" component={TabNavigator} />
+
+      {/* Detalle de película */}
       <Stack.Screen name="MovieDetail" component={MovieDetailScreen} />
     </Stack.Navigator>
   );

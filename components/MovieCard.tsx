@@ -10,14 +10,16 @@ import { Movie } from "types";
 
 type Props = {
   movie: Movie;
-  layout?: "grid" | "list";   // opcional
-  onPress?: () => void;       // opcional
+  layout?: "grid" | "list";   
+  onPress?: () => void;       
+  overlayIcon?: string;
 };
 
 export default function MovieCard({
   movie,
   layout = "grid",
   onPress = () => {},
+  overlayIcon,
 }: Props) {
   // Validar poster (puede venir null)
   const poster = movie?.poster_path
@@ -35,8 +37,13 @@ export default function MovieCard({
       onPress={onPress}
     >
       {layout === "grid" ? (
-        <>
+        <View>
           <Image source={posterSource} style={styles.gridImage} />
+          {overlayIcon && (
+            <View style={styles.overlay}>
+              <Text style={styles.overlayText}>{overlayIcon}</Text>
+            </View>
+          )}
           <Text numberOfLines={2} ellipsizeMode="tail" style={styles.gridTitle}>
             {movie.title}
           </Text>
@@ -45,7 +52,7 @@ export default function MovieCard({
               {movie.release_date.split("-")[0]}
             </Text>
           )}
-        </>
+        </View>
       ) : (
         <>
           <Image source={posterSource} style={styles.listImage} />
@@ -76,13 +83,27 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 6,
   },
+  overlay: {
+    position: "absolute",
+    top: 6,
+    right: 6,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    borderRadius: 12,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  overlayText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
   gridTitle: {
     fontSize: 14,
     fontWeight: "600",
     color: "#fff",
     textAlign: "center",
-    lineHeight: 18,     // 👈 separa las letras
-    marginBottom: 2,    // 👈 deja aire con el año
+    lineHeight: 18,
+    marginBottom: 2,
   },
   gridSubtitle: {
     fontSize: 12,

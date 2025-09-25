@@ -12,10 +12,15 @@
     "isolatedModules": true,
     "noEmit": true,
     "types": ["expo", "react", "react-native"],
-    "baseUrl": ".",               // 👈 agrega esto
-    "paths": {                    // 👈 y esto
-      "*": ["*"]
-    }
+    "baseUrl": ".",               
+    "paths": {
+      "@components/*": ["components/*"],
+      "@screens/*": ["screens/*"],
+      "@services/*": ["services/*"],
+      "@config/*": ["config/*"],
+      "@hooks/*": ["hooks/*"],
+      "@context/*": ["context/*"]
+   }
   },
   "include": [
     "**/*.ts",

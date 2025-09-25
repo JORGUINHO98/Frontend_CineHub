@@ -113,9 +113,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signUp = async (userData: { email: string; password: string; nombre: string }) => {
   try {
-    console.log("🔵 signUp userData:", userData); // 👈 log
+    console.log("🔵 signUp userData:", userData);
     await authService.register(userData);
-    await signIn(userData.email, userData.password); // login automático
+    await signIn(userData.email, userData.password);
   } catch (error: any) {
     console.error("❌ SignUp error:", error.response?.data || error.message);
     throw error;

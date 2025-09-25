@@ -8,8 +8,11 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
+  StatusBar,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { useAuth } from "../hooks/useAuth";
+import { COLORS } from "../config/config";
 
 export default function LoginScreen() {
   const { signIn, signUp, loading } = useAuth();
@@ -49,64 +52,73 @@ export default function LoginScreen() {
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <View style={styles.card}>
-        <Text style={styles.logo}>🎬 CineHub</Text>
-        <Text style={styles.title}>
-          {isLogin ? "Bienvenido de nuevo" : "Crea tu cuenta"}
-        </Text>
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.background} />
 
-        {!isLogin && (
+      {/* Fondo con gradiente */}
+      <LinearGradient
+        colors={[COLORS.background, "#0a0a0a"]}
+        style={styles.gradient}
+      >
+        <View style={styles.card}>
+          <Text style={styles.logo}>🎬 CineHub</Text>
+          <Text style={styles.title}>
+            {isLogin ? "Bienvenido de nuevo" : "Crea tu cuenta"}
+          </Text>
+
+          {!isLogin && (
+            <TextInput
+              style={styles.input}
+              placeholder="Nombre completo"
+              placeholderTextColor="#666"
+              value={nombre}
+              onChangeText={setNombre}
+            />
+          )}
+
           <TextInput
             style={styles.input}
-            placeholder="Nombre completo"
-            placeholderTextColor="#ccc"
-            value={nombre}
-            onChangeText={setNombre}
+            placeholder="Correo electrónico"
+            placeholderTextColor="#666"
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+            keyboardType="email-address"
           />
-        )}
 
-        <TextInput
-          style={styles.input}
-          placeholder="Correo electrónico"
-          placeholderTextColor="#ccc"
-          value={email}
-          onChangeText={setEmail}
-          autoCapitalize="none"
-        />
+          <TextInput
+            style={styles.input}
+            placeholder="Contraseña"
+            placeholderTextColor="#666"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+          />
 
-        <TextInput
-          style={styles.input}
-          placeholder="Contraseña"
-          placeholderTextColor="#ccc"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
+          {error ? <Text style={styles.error}>{error}</Text> : null}
 
-        {error ? <Text style={styles.error}>{error}</Text> : null}
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleSubmit}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#000" />
+            ) : (
+              <Text style={styles.buttonText}>
+                {isLogin ? "🚀 Entrar" : "✨ Registrarse"}
+              </Text>
+            )}
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.button}
-          onPress={handleSubmit}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color="#000" />
-          ) : (
-            <Text style={styles.buttonText}>
-              {isLogin ? "🚀 Entrar" : "✨ Registrarse"}
+          <TouchableOpacity onPress={() => setIsLogin(!isLogin)}>
+            <Text style={styles.switchText}>
+              {isLogin
+                ? "¿No tienes cuenta? Regístrate aquí"
+                : "¿Ya tienes cuenta? Inicia sesión"}
             </Text>
-          )}
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => setIsLogin(!isLogin)}>
-          <Text style={styles.switchText}>
-            {isLogin
-              ? "¿No tienes cuenta? Regístrate aquí"
-              : "¿Ya tienes cuenta? Inicia sesión"}
-          </Text>
-        </TouchableOpacity>
-      </View>
+          </TouchableOpacity>
+        </View>
+      </LinearGradient>
     </KeyboardAvoidingView>
   );
 }
@@ -114,13 +126,23 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000", // fondo negro puro
-    alignItems: "center",
+  },
+  gradient: {
+    flex: 1,
     justifyContent: "center",
+    alignItems: "center",
     paddingHorizontal: 20,
   },
   card: {
     width: "100%",
+    maxWidth: 400,
+    backgroundColor: "rgba(18,18,18,0.85)",
+    borderRadius: 16,
+    padding: 24,
+    shadowColor: "#00ff88",
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 8,
     alignItems: "center",
   },
   logo: {
@@ -152,7 +174,7 @@ const styles = StyleSheet.create({
   },
   button: {
     width: "100%",
-    backgroundColor: "#00ff88", // verde fosforescente
+    backgroundColor: "#00ff88",
     padding: 16,
     borderRadius: 10,
     alignItems: "center",

@@ -56,3 +56,17 @@ export type SearchResult = {
   total_results: number;
   total_pages: number;
 };
+// 📱 Navegación principal
+export type RootStackParamList = {
+  MainTabs: undefined;
+  MovieDetail: { movieId: number }; // detalle de película recibe un id
+};
+
+
+// 📂 Tabs inferiores
+export type MainTabParamList = {
+  Home: undefined;
+  Search: undefined;
+  Profile: undefined;
+};
+
