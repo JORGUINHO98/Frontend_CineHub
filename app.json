@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "CineHub",
+    "slug": "cinehub",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": null,
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": null,
+      "resizeMode": "contain",
+      "backgroundColor": "#0a0a0a"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.cinehub.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": null,
+        "backgroundColor": "#0a0a0a"
+      },
+      "package": "com.cinehub.app"
+    },
+    "web": {
+      "favicon": null,
+      "bundler": "metro"
+    },
+    "plugins": [],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
